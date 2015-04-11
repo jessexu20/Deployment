@@ -8,6 +8,6 @@ RUN apt-get -y install npm
 RUN apt-get -y install tcl wget
 RUN wget http://download.redis.io/releases/redis-3.0.0.tar.gz
 RUN tar xzf redis-3.0.0.tar.gz
-RUN cd redis-3.0.0
+WORKDIR "/redis-3.0.0"
 RUN make
 RUN make test

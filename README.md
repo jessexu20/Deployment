@@ -59,3 +59,4 @@ Please visit the http://localhost:3000/meow to check the result and please notic
 ### Proxy server
 
 If you visit the http://localhost:3000, you will notice that everytime you visit it, you will have a different url which is either on port 3001 or on port 3002. The server will automatically direct you to either of the sites.
+# Deployment

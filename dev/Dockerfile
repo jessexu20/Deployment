@@ -14,10 +14,11 @@ WORKDIR redis-3.0.0
 RUN make
 RUN make test
 WORKDIR /
-RUN git  clone https://github.com/jessexu20/deployment
+RUN git clone https://github.com/jessexu20/deployment
 WORKDIR deployment/infrastructure 
 RUN pwd
 RUN npm install
+WORKDIR /
 WORKDIR deployment/source
 RUN npm install
 RUN npm install -g bower

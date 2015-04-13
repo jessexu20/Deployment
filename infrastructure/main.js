@@ -1,6 +1,5 @@
 var redis = require('redis')
 var express = require('express')
-
 var http = require('http')
 var request = require('request')
 var os = require('os')
@@ -9,7 +8,6 @@ var server = require('http').Server(app);
 var io= require('socket.io')(server)
 // REDIS
 var client = redis.createClient(6379, '127.0.0.1', {})
-app.use(express.static("../www"));
 ///////////// WEB ROUTES
 
 // Add hook to make it easier to get all visited URLS
@@ -109,8 +107,7 @@ function calcuateColor()
 var nodeServers = [];
 
 ///////////////
-//// Broadcast heartbeat over websockets
-//////////////
+
 setInterval( function () 
 {
 	io.sockets.emit('heartbeat', 
@@ -144,11 +141,8 @@ function proxy(req,res){
 }
 app.get('/', function(req, res) {
   	proxy(req,res)
-})
+});
 
-app.get('/monitor',function(req,res){
-	res.sendFile('index.html');
-})
 
 // HTTP SERVER
 server.listen(3000, function () {

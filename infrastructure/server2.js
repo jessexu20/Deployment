@@ -8,7 +8,7 @@ var app = express()
 var server = require('http').Server(app);
 var io= require('socket.io')(server)
 // REDIS
-var client = redis.createClient(6379, '127.0.0.1', {})
+var client = redis.createClient(6379, '172.17.42.1', {})
 
 ///////////// WEB ROUTES
 function memoryLoad()
@@ -57,7 +57,7 @@ function measureLatenancy(server)
 {
 	var options = 
 	{
-		url: 'http://localhost' + ":" + server.address().port,
+		url: 'http://52.0.146.229' + ":" + server.address().port,
 	};
 	var startTime=Date.now();
 	request(options, function (error, res, body) 

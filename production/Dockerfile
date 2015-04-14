@@ -14,9 +14,5 @@ WORKDIR redis-3.0.0
 RUN make
 RUN make test
 WORKDIR /
-RUN git clone https://github.com/jessexu20/deployment
-WORKDIR deployment/infrastructure 
-RUN pwd
-RUN npm install
 EXPOSE 6379
 EXPOSE 3000-3002

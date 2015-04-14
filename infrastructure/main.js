@@ -3,7 +3,7 @@ var express = require('express')
 var app=express();
 var chance=3;//1/chance enter into the canary
 // REDIS
-var client = redis.createClient(6379, '127.0.0.1', {})
+var client = redis.createClient(6379, '172.17.42.1', {})
 ///////////// WEB ROUTES
 
 // Add hook to make it easier to get all visited URLS
@@ -18,14 +18,14 @@ function proxy(req,res){
 		client.lrange("sitesList",0,0,function(error,item){
 			console.log(item)
 			console.log("In Canary Server")
-			res.redirect("http://localhost:"+item+req.url);
+			res.redirect("http://52.0.146.229:"+item+req.url);
 		});
 	}
 	else{
 		client.lrange("sitesList",1,1,function(error,item){
 			console.log(item)
 			console.log("In Ordinary Server")
-			res.redirect("http://localhost:"+item+req.url);
+			res.redirect("http://52.0.146.229:"+item+req.url);
 		});
 	}
 }

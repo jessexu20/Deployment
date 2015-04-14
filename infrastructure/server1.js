@@ -3,7 +3,7 @@ var fs = require('fs')
 var express = require('express')
 var app = express()
 // REDIS
-var client = redis.createClient(6379, '127.0.0.1', {})
+var client = redis.createClient(6379, '172.17.42.1', {})
 
 ///////////// WEB ROUTES
 

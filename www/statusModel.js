@@ -78,14 +78,15 @@ var viewModel = new StatusModel(
         ]
     },
     { 
-        name: "Your Computer", cpu: "0.00", memoryLoad: "0", alerts: "0", faults: "0", latency: "0",
+        name: "Server(Canary)", cpu: "0.00", memoryLoad: "0", alerts: "0", faults: "0", latency: "0",
         nodes: 
         [
             {color:"#ab3fdd"},
             {color:"#ab3fdd"},
             {color:"#ab3fdd"}
         ]
-    }
+		
+    },
 ]);
 
 
@@ -94,8 +95,8 @@ $(document).ready( function()
     ko.applyBindings(viewModel);
     $('#statusTable').DataTable( { "paging":   false, "info":     false });
 
-    var socket = io.connect('http://52.0.146.229:3002');
-	// var socket = io.connect('http://localhost:3002');
+    var socket = io.connect('http://52.0.146.229:3000');
+	// var socket = io.connect('http://localhost:3000');
     socket.on("heartbeat", function(client) 
     {
         console.log(JSON.stringify(client));

@@ -1,6 +1,12 @@
 MileStone 3
 =========================
 ##MileStone Deploy
+
+The IP address of our aws server is 
+	
+	http://52.11.31.114:3000/
+	http://52.0.146.229:3000/
+	
 ### Docker Configuration
 We have used docker to work as our container so that we only to pull the container from the dockerHub or build a local container using the following dockerfile.
 

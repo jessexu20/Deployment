@@ -1,4 +1,4 @@
-ear cvf release.tar infrastructure/ www/ get_release.sh
+tar cvf release.tar infrastructure/ www/ get_release.sh
 
 git add release.tar
 

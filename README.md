@@ -1,62 +1,137 @@
-Cache, Proxies, Queues
+MileStone 3
 =========================
-##Homework3(Option 2)
-### Setup
+##MileStone Deploy
+### Docker Configuration
+We have used docker to work as our container so that we only to pull the container from the dockerHub or build a local container using the following dockerfile.
 
-* Clone this repo, run `npm install`.
-* Install redis and run on localhost:6379
-go to redis's directory and run
-	src/redis-server
+####Development Container
+The following is the dockerfile in development, which needs more dependency than the production one.
 
-### A simple web server
-I have created three servers on the local host, server which runs on port 3000 is acting as proxy and servers on port 3001 and port 3002 runs as normal servers.
+	FROM ubuntu:14.04
+	MAINTAINER Jesse Xu, sxu11@ncsu.edu
 
-	node proxy.js(port on 3000)
-	node server1.js(port on 3001)
-	node server2.js(port on 3002)
+	RUN apt-get update
+	RUN apt-get -y install git
+	RUN apt-get -y install nodejs
+	RUN apt-get -y install npm
+	RUN apt-get -y install tcl wget
+	RUN apt-get -y install vim
+	RUN apt-get -y install nodejs-legacy
+	RUN wget http://download.redis.io/releases/redis-3.0.0.tar.gz
+	RUN tar xzf redis-3.0.0.tar.gz
+	WORKDIR redis-3.0.0
+	RUN make
+	RUN make test
+	WORKDIR /
+	RUN git clone https://github.com/jessexu20/deployment
+	WORKDIR deployment/infrastructure 
+	RUN pwd
+	RUN npm install
+	WORKDIR /
+	WORKDIR deployment/source
+	RUN npm install
+	RUN npm install -g bower
+	RUN npm install -g grunt
+	RUN npm install -g grunt-cli
+	RUN bower install --allow-root
+	RUN grunt less
+	EXPOSE 6379
+	EXPOSE 3000-3002
 
-### Redis
-
-You will be using [redis](http://redis.io/) to build some simple infrastructure components, using the [node-redis client](https://github.com/mranney/node_redis).
-
-	var redis = require('redis')
-	var client = redis.createClient(6379, '127.0.0.1', {})
-
-In general, you can run all the redis commands in the following manner: client.CMD(args). For example:
-
-	client.set("key", "value");
-	client.get("key", function(err,value){ console.log(value)});
-
-### An expiring cache
-
-This function is implement on port 3001. Please visit the http://localhost:3000/get,http://localhost:3000/set to check the function and please watch the console output.
-
-Create two routes, `/get` and `/set`.
-
-When `/set` is visited, set a new key, with the value:
-> "this message will self-destruct in 10 seconds".
-
-Use the expire command to make sure this key will expire in 10 seconds.
-
-When `/get` is visited, fetch that key, and send value back to the client: `res.send(value)` 
-
-
-### Recent visited sites
-
-This function is implement on port 3001. Please visit the http://localhost:3000/recent to check the function and please watch the console output and page. The page will show in the tuple the five recent url you visited.
+In order to let the server communicate to the outside world, you have to expose the port in docker container.
 
 
-### Cat picture uploads: queue
+####Production Container
+Similar dockerfile with less dependency as follows.
 
-This function is implement on port 3000,3001,3002. 
+	FROM ubuntu:14.04
+	MAINTAINER Jesse Xu, sxu11@ncsu.edu
 
-Before visiting the page, you should start the server and upload a picture using the following command.
+	RUN apt-get update
+	RUN apt-get -y install git
+	RUN apt-get -y install nodejs
+	RUN apt-get -y install npm
+	RUN apt-get -y install tcl wget
+	RUN apt-get -y install vim
+	RUN apt-get -y install nodejs-legacy
+	RUN wget http://download.redis.io/releases/redis-3.0.0.tar.gz
+	RUN tar xzf redis-3.0.0.tar.gz
+	WORKDIR redis-3.0.0
+	RUN make
+	RUN make test
+	WORKDIR /
+	EXPOSE 6379
+	EXPOSE 3000-3002
+
+### Grunt
+We have used grunt to build the source to an bootstrap css file. Therefore, in the development container, we need to install grunt, grunt-cli, bower several tools to build the css file and output into the www folder. The project is a [former 510 project example](https://github.ncsu.edu/sxu11/MiniProject1-Template) given by Chris Parnin. We use it so that we can have built result in our project.
+If you want to build the css yourself, in the folder source, run grunt less. As indicate by the gruntfile.js.
+
+	module.exports = function(grunt) {
+
+	  grunt.initConfig({
+
+		  less: 
+		  {
+		      development: 
+		      {
+		        options: 
+		        {
+		          compress: true,
+		          yuicompress: true,
+		          optimization: 2
+		        },
+		        files: 
+		        [{
+		  				expand: true,
+		  				cwd: "bower_components/bootstrap/less",
+		  				src: "**/bootstrap.less",
+		  				dest: "../www/css/",
+		  				ext: ".css"
+		        }]
+		      }
+		  }
+
+	  });
+
+	  // This will automatically load any grunt plugin you install, such as grunt-contrib-less.
+	  require('load-grunt-tasks')(grunt);
+
+	};
+
 	
-	curl -F "image=@./img/morning.jpg" localhost:3000/upload
+####Publish/Get a release
+We have wrote a script to push a release, you only need to run the following to publish a release. The release will only contain the infrastructure and the www folder which is the webpage and leave alone the source code for building the css.
+	
+	./publish_release v(version number)
+	
+And in order to get a release in the production server, you need to 
 
-Please visit the http://localhost:3000/meow to check the result and please notice since I have implemented proxy on it, it will redirect you to http://localhost:3001/meow or http://localhost:3002/meow. It will display the most recent image to the client and *remove* the image from the queue.
+	./get_release v(version number)
 
-### Proxy server
+### Infrastructure
 
-If you visit the http://localhost:3000, you will notice that everytime you visit it, you will have a different url which is either on port 3001 or on port 3002. The server will automatically direct you to either of the sites.
-# Deployment
+After correctly build the docker container locally, we have used the saltstack to install the docker on two instances on AWS. On the development instance, we pull the develop container by running
+	
+	sudo docker pull jessexu20/deployment2
+	
+On the production machine, we pull the production container by running 
+	
+	sudo docker pull jessexu20/deployment:production
+	
+When the docker images have been pulled from the dockerhub, we need to run the container for redis and server. The "-d" tag is to ask the container running in background and "-p" tag is for port mapping. Here, we still use the port 6379 for redis server. For the server, we use the port 3000,3001 and 3002. 
+	
+	sudo docker run -d -p 6379:6379 /redis-3.0.0/src/redis-server
+	sudo docker run -d -p 3000-3002:3000-3002 /deployment
+
+### Canary Release
+
+We have deployed the normal server on port 3001, while canary server on port 3002. Port 3000 serves as a proxy server, which will direct the access to 3001 and 3002. We have set up a chance variable to regulate the routing. By default, the chance to get into the canary server is 1/10, which means you have 1/10 possibility to get into the canary server.
+
+
+### Canary Monitor
+
+We have implemented the monitor mechanism in the workshop. Therefore, the cpu and memory information will be recorded by the socket.io and forward it into the webpage. We also add alerts and faults column into the webpage. 
+
+* When the cpu usage is over 20% or the spare memory is less than 70%, it will trigger the **alert** and the alerts number on the monitor page will increase. 
+* When the cpu usage is over 50% or the spare memory is less than 50%, it will trigger the **fault** and the alerts number on the monitor page will increase. Also, we have implemented a route in the canary server. If you visit the route "/error", it will trigger the fault value to increase by 1.

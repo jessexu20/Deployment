@@ -150,6 +150,11 @@ canary.get('/',function(req,res){
 	var indexFile = "index.html";
 	res.sendFile(indexFile);
 })
+proxy.get('/', function(req, res) {
+	console.log("ready to proxy");
+  	proxyfn(req,res)
+});
+
 proxy.use(express.static(cwd))
 proxy.get('/monitor',function(req,res){
 	var monitorFile = "/monitor.html";
@@ -187,9 +192,6 @@ function proxyfn(req,res){
 		});
 	}
 }
-proxy.get('/', function(req, res) {
-  	proxyfn(req,res)
-});
 
 
 // HTTP SERVER

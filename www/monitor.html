@@ -29,7 +29,12 @@
                 <th>Name</th>
                 <th>CPU %</th>
                 <th>Memory %</th>
+				<th>Alerts</th>
+				<th>Faults</th>
+				<th>Latency</th>
                 <th>Nodes</th>
+				
+				
             </tr>
         </thead>
         <tbody data-bind='foreach: clients'>
@@ -37,6 +42,9 @@
               <td data-bind='text: name'></td>
               <td data-bind='text: cpu'></td>
               <td data-bind='text: memoryLoad'></td>
+			  <td data-bind='text: alerts'></td>
+			  <td data-bind='text: faults'></td>
+			  <td data-bind='text: latency'></td>
               <td>
                 <div data-bind='foreach: nodes'>
                   <div class="foo" data-bind="style: {backgroundColor: color}"></div>

@@ -9,7 +9,9 @@ var server = require('http').Server(app);
 var io= require('socket.io')(server)
 // REDIS
 var client = redis.createClient(6379, '172.17.42.1', {})
-
+// var client = redis.createClient(6379, '127.0.0.1', {})
+var alertsCounter=0;
+var faultsCounter=0;
 ///////////// WEB ROUTES
 function memoryLoad()
 {
@@ -50,7 +52,6 @@ function cpuAverage()
 	var totalDifference = endMeasure.total - startMeasure.total;
  
 	//Calculate the average percentage CPU usage
-	console.log(totalDifference)
 	return ~~(100*(totalDifference-idleDifference)/totalDifference);
 };
 function measureLatenancy(server)
@@ -106,14 +107,28 @@ function calcuateColor()
 };
 /// CHILDREN nodes
 var nodeServers = [server];
-
+function alertsCount()
+{
+	// console.log( os.totalmem(), os.freemem() );
+	if(cpuAverage()>=20||memoryLoad()<=70)
+		alertsCounter++;
+	
+	return alertsCounter;
+};
+function faultsCount()
+{
+	if(cpuAverage()>=50||memoryLoad()<=50)
+		faultsCounter++;
+	// console.log( os.totalmem(), os.freemem() );
+	return faultsCounter;
+};
 ///////////////
 
 setInterval( function () 
 {	
 	io.sockets.emit('heartbeat', 
 	{ 
-        name: "Your Computer", cpu: cpuAverage(), memoryLoad: memoryLoad(),
+        name: "Your Computer", cpu: cpuAverage(), memoryLoad: memoryLoad(),alerts: alertsCount(),faults: faultsCount(),latency:measureLatenancy(server),
         nodes: calcuateColor()
    });
 
@@ -124,17 +139,19 @@ var cwd = path.resolve(__dirname+'/../www');
 app.use(express.static(cwd))
 app.get('/',function(req,res){
 //	res.sendFile('index.html');
-console.log(cwd);
 	var indexFile = "index.html";
 	res.sendFile(indexFile);
 })
 app.use(express.static(cwd))
 app.get('/monitor',function(req,res){
-    console.log(cwd);
 	var monitorFile = "/monitor.html";
 	res.sendFile(monitorFile,{root:cwd});
 })
-
+app.get('/error',function(req,res){
+	faultsCounter++;
+	
+	res.send("This page will generate Faults");
+})
 
 // HTTP SERVER
 server.listen(3002, function () {

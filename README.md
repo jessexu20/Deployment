@@ -109,12 +109,14 @@ If you want to build the css yourself, in the folder source, run grunt less. As 
 	
 ####Publish/Get a release
 We have wrote a script to push a release, you only need to run the following to publish a release. The release will only contain the infrastructure and the www folder which is the webpage and leave alone the source code for building the css.
-	
-	./publish_release v(version number)
-	
-And in order to get a release in the production server, you need to 
 
-	./get_release v(version number)
+We have published a release at the repo release page.
+	
+And in order to get a release in the production server, you need to download the release at the production server and then untar it.
+You will get two folders which is /infrastructure and /www. The files under the infrastructure folder is the node code which is used to start the server. And www folder only contains the web page and the built css.
+
+	wget https://github.com/jessexu20/Deployment/releases/download/v2/release.tar
+	tar xvf release.tar
 
 ### Infrastructure
 

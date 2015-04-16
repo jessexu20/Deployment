@@ -4,8 +4,8 @@ MileStone 3
 
 The IP address of our aws server is 
 	
-	http://52.11.31.114:3000/
-	http://52.0.146.229:3000/
+Production Server:	http://52.11.31.114:3000/
+Develop Server: 	http://52.0.146.229:3000/
 	
 ### Docker Configuration
 We have used docker to work as our container so that we only to pull the container from the dockerHub or build a local container using the following dockerfile.
@@ -132,7 +132,7 @@ When the docker images have been pulled from the dockerhub, we need to run the c
 
 ### Canary Release
 
-We have deployed the normal server on port 3001, while canary server on port 3002. Port 3000 serves as a proxy server, which will direct the access to 3001 and 3002. We have set up a chance variable to regulate the routing. By default, the chance to get into the canary server is 1/10, which means you have 1/10 possibility to get into the canary server.
+We have deployed the normal server on port 3001, while canary server on port 3002. Port 3000 serves as a proxy server, which will direct the access to 3001 and 3002. We have set up a chance variable to regulate the routing. By default, the chance to get into the canary server is 1/3, which means you have 1/3 possibility to get into the canary server.
 
 
 ### Canary Monitor

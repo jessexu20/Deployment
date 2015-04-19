@@ -6,6 +6,8 @@ The IP address of our aws server is
 	
 Production Server:	http://52.11.31.114:3000/
 
+Canary Server port: http://52.11.31.114:3002/ <td> Normal Server Port: http://52.11.31.114:3001/
+
 Develop Server: 	http://52.0.146.229:3000/
 	
 ### Docker Configuration
